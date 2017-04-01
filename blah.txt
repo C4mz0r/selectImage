@@ -1,0 +1,6 @@
+
+var images = document.body.querySelectorAll("img");
+var a = document.createElement("a");
+a.download = images[0].src;
+a.text = 'hello';
+document.body.appendChild(a);
