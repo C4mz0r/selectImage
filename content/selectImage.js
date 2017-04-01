@@ -7,14 +7,17 @@ function handleError(error) {
 }
 
 var downloads = [];
+var downloadButton = new DownloadButton();
+downloadButton.createButton();
 
+/*
 function updateButtonText() {    
     var text = 'Download';
     var button = document.querySelector('#downloadButton');    
     if (downloads.length > 0)
         text += ' (' + downloads.length + ')';
     button.innerHTML = text;
-}
+}*/
 
 function doDownload(downloads) {
     alert('dl clicked');
@@ -22,21 +25,9 @@ function doDownload(downloads) {
     sending.then(handleResponse, handleError);
 };
 
-function AddButton() {    
-    var button = document.createElement("button");
-    button.id = "downloadButton";
-    button.innerHTML = 'Download';
-    button.onclick = function(){ 
-        if (downloads.length > 0) {
-    	    doDownload(downloads);
-        } else {
-            alert('You have not selected any items for download');
-        }
-    }
-    document.body.appendChild(button);    
-};
 
-AddButton();
+
+//AddButton();
 
 
 var selectImage = function(element) {    
@@ -61,4 +52,27 @@ images.forEach(
     }
 );
 
-
+/*
+ * Class for the download button.
+ */
+function DownloadButton() {
+    
+    var id = 'downloadButton';
+    var title = 'Download';
+    
+    this.createButton = function() {    
+        var button = document.createElement("button");
+        button.id = id;
+        button.innerHTML = title;
+        
+        button.onclick = function(){ 
+            if (downloads.length > 0) {
+                doDownload(downloads);
+            } else {
+                alert('You have not selected any items for download');
+            }
+        }
+        document.body.appendChild(button);    
+    };
+    
+}
