@@ -54,7 +54,7 @@ function Selection(button, list) {
 function DownloadButton(list) {
     
     // html id
-    var id = 'downloadButton';
+    var id = 'downloadButtonSelectImage';
     var title = 'Download';
     var button = undefined;
     var downloadList = list;
