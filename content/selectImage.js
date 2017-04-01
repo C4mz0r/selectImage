@@ -1,78 +1,96 @@
-function handleResponse(message) {
-  console.log(`Message from the background script:  ${message.response}`);
-}
+// Manages the list of items that the user wants to download
+var downloadList = new DownloadList();
 
-function handleError(error) {
-  console.log(`Error: ${error}`);
-}
-
-var downloads = [];
-var downloadButton = new DownloadButton();
+// Manage and display the download button
+var downloadButton = new DownloadButton(downloadList);
 downloadButton.createButton();
 
+// Manage the ability to click on items to select them
+var selection = new Selection(downloadButton, downloadList);
+
 /*
-function updateButtonText() {    
-    var text = 'Download';
-    var button = document.querySelector('#downloadButton');    
-    if (downloads.length > 0)
-        text += ' (' + downloads.length + ')';
-    button.innerHTML = text;
-}*/
+ * Class for the download list
+ */
+function DownloadList() {
+    var downloads = [];
+    
+    this.getList = function() {
+        return downloads;
+    }
 
-function doDownload(downloads) {
-    alert('dl clicked');
-    var sending = browser.runtime.sendMessage({images: downloads});
-    sending.then(handleResponse, handleError);
-};
-
-
-
-//AddButton();
-
-
-var selectImage = function(element) {    
-    element.className = 'selectedImage';
-    downloads.push(element.src);
-    updateButtonText();
-    console.log('Downloads are: ' + downloadList);
-    console.log('Want to try dl ' + element.src);    
+    this.addItem = function(name) {
+        downloads.push(name);
+    }
 }
 
+/*
+ * Class for the selection
+ */
+function Selection(button, list) {
+    var images = document.body.querySelectorAll('img');    
 
-var images = document.body.querySelectorAll('img');
-images.forEach(
-    function(element){
-        element.className = 'unselectedImage';
-        element.onclick = function(e) {                                            
-            e.stopImmediatePropagation();
-	        e.preventDefault();
-            selectImage(element);
-            return false;
-        }
+    var selectImage = function(element) {    
+        element.className = 'selectedImage';
+        list.addItem(element.src);
+        button.updateButtonText(list.getList().length);        
     }
-);
+
+    images.forEach(
+        function(element){
+            element.className = 'unselectedImage';
+            element.onclick = function(e) {                                            
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                selectImage(element);
+                return false;
+            }
+        }
+    );  
+}
 
 /*
  * Class for the download button.
  */
-function DownloadButton() {
+function DownloadButton(list) {
     
+    // html id
     var id = 'downloadButton';
     var title = 'Download';
-    
-    this.createButton = function() {    
-        var button = document.createElement("button");
+    var button = undefined;
+    var downloadList = list;
+        
+    this.createButton = function() {            
+        button = document.createElement("button");
         button.id = id;
         button.innerHTML = title;
         
-        button.onclick = function(){ 
-            if (downloads.length > 0) {
-                doDownload(downloads);
-            } else {
+        button.onclick = function(){             
+            if (downloadList.getList().length > 0) {
+                doDownload(downloadList.getList());
+            }             
+            else {
                 alert('You have not selected any items for download');
             }
         }
         document.body.appendChild(button);    
     };
-    
+
+    this.updateButtonText = function(counter) {        
+        if (counter > 0)
+            button.innerHTML = title + ' (' + counter + ')';        
+    }
+
+    // Functions for doing the download
+    function handleResponse(message) {
+    console.log(`Message from the background script:  ${message.response}`);
+    }
+
+    function handleError(error) {
+    console.log(`Error: ${error}`);
+    }
+
+    var doDownload = function(downloads) {    
+        var sending = browser.runtime.sendMessage({images: downloads});
+        sending.then(handleResponse, handleError);
+    };
 }
