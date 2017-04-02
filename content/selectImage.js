@@ -82,11 +82,11 @@ function DownloadButton(list) {
 
     // Functions for doing the download
     function handleResponse(message) {
-    console.log(`Message from the background script:  ${message.response}`);
+        console.log(`Message from the background script:  ${message.response}`);
     }
 
     function handleError(error) {
-    console.log(`Error: ${error}`);
+        console.log(`Error: ${error}`);
     }
 
     var doDownload = function(downloads) {    
