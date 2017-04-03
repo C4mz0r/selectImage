@@ -31,7 +31,14 @@ function Selection(button, list) {
 
     var selectImage = function(element) {    
         element.className = 'selectedImage';
-        list.addItem(element.src);
+        
+        // If the image is a thumbnail, often the parent will be an anchor with href to the larger image;
+        // try to get this image instead of the thumbnail
+        if (element.parentElement !== undefined && element.parentElement.hasAttribute('href')) {
+                list.addItem(element.parentElement.href);            
+        } else {
+            list.addItem(element.src);
+        }
         button.updateButtonText(list.getList().length);        
     }
 
